@@ -12,7 +12,15 @@ function getSupabaseEnv() {
   return { url, anonKey }
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
+  if (process.env.E2E_DISABLE_SUPABASE_PROXY === 'true') {
+    return NextResponse.next({
+      request: {
+        headers: request.headers,
+      },
+    })
+  }
+
   let response = NextResponse.next({
     request: {
       headers: request.headers,

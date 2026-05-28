@@ -1,6 +1,6 @@
 # FinanzIA Supabase boundary
 
-This folder now contains the Phase 2 security foundation: schema migrations, RLS ownership policies, private Storage groundwork, and seed/policy test SQL.
+Este directorio contiene el baseline de esquema + seguridad (RLS) y pruebas SQL runtime del MVP.
 
 ## Folders
 
@@ -11,17 +11,25 @@ This folder now contains the Phase 2 security foundation: schema migrations, RLS
 | `tests/` | SQL sanity checks for own-vs-other-user RLS behavior. |
 | `functions/` | Optional Supabase Edge Functions if a later slice chooses them. |
 
-## Quick path (local Supabase CLI)
+## Quick path (Supabase CLI)
 
-1. Apply migrations (example): `supabase db reset`.
-2. Validate default categories seed: `supabase db query < supabase/seed/0001_default_categories.sql` (if reset does not auto-run your seed workflow).
-3. Run SQL policy sanity checks: `supabase db query < supabase/tests/001_rls_ownership_checks.sql`.
+1. Alinear schema local/remoto: `supabase db push`.
+2. Reset local completo: `supabase db reset`.
+3. Ejecutar checks SQL de seguridad/atomicidad:
+   - `supabase db query < supabase/tests/001_rls_ownership_checks.sql`
+   - `supabase db query < supabase/tests/002_finance_atomic_rpc.sql`
+   - `supabase db query < supabase/tests/003_phase5_rls_fixed_savings.sql`
 
 ## Notes
 
-- Canonical Phase 2 tables include `classification_rules`, `bank_statements`, and `ocr_extracted_transactions`.
+- Tablas clave del MVP incluyen `accounts`, `categories`, `transactions`, `fixed_expenses`, `savings_goals`, `bank_statements`, `ocr_extracted_transactions`.
 - Compatibility views (`category_rules`, `statement_uploads`, `ocr_batches`, `ocr_rows`) are included to align with existing SDD wording used in design/tasks.
 
-## Next slice
+## Runtime drift note
 
-Implement Phase 3 auth/profile and finance-core actions on top of this schema baseline.
+Durante la verificación de Phase 5 se detectó drift remoto (faltaban `fixed_expenses` y `savings_goals`) y se corrigió con migración de alineación (`0005_phase5_fixed_savings_alignment`).
+
+## Próximo foco
+
+- Completar pruebas de integración E2E acopladas a journeys UI.
+- Mantener `db push` + SQL runtime checks como gate antes de cada release.

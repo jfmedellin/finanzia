@@ -1,12 +1,30 @@
 # FinanzIA OCR boundary
 
-This folder is the future home of statement extraction. Phase 1 only creates the boundary so later slices can add an OCR engine, extraction contract, tests, and upload/review integration without mixing backend code into the frontend.
+Esta carpeta representa el límite de servicio OCR (backend separado del frontend).
 
-## Current placeholder
+## Estado actual
 
-- Docker Compose serves this folder with `python -m http.server 8010` only to prove the local service boundary exists.
-- No OCR logic, parsing, storage access, or transaction confirmation is implemented in this slice.
+- Ya existe contrato tipado en `backend/ocr/contract.ts`.
+- El flujo funcional actual vive en frontend (`/statements`) con extracción mock determinística para soportar:
+  - upload privado a bucket `statements`,
+  - generación de filas `draft` en `ocr_extracted_transactions`,
+  - corrección manual,
+  - confirmación a `transactions` vía RPC `create_finance_transaction`.
 
-## Future contract
+## Contrato objetivo
 
-`{ batchId, userId, storagePath, fileType, rows: [{ date, description, amount, direction, confidence, suggestedCategoryId, rawText }] }`
+```ts
+{
+  batchId,
+  userId,
+  storagePath,
+  fileType,
+  rows: [{ date, description, amount, direction, confidence, suggestedCategoryId, rawText }]
+}
+```
+
+## Pendiente para producción
+
+- Reemplazar parser mock por engine OCR real.
+- Añadir pipeline asíncrono (colas/reintentos).
+- Registrar trazas por lote (batch observability).

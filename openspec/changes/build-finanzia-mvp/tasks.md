@@ -50,23 +50,23 @@ Chain strategy: stacked-to-main
 
 ## Phase 4: Stitch-Guided UI and Metrics
 
-- [ ] 4.1 Use `frontend-design` and Stitch `projects/16421650138318590896` as UI source of truth for tokens: navy `#1A2B3C`, emerald `#2ECC71`, Inter, 8px spacing, ambient/glass states.
-- [ ] 4.2 Build dashboard shell from desktop `9804d58210334282b772e405022314dd` and mobile `cfb45554f21545dcbf8aadd6029c39db`; derive tablet from breakpoints.
-- [ ] 4.3 Add dashboard metrics, zero states, period comparison, accessible validation feedback, and responsive navigation.
+- [x] 4.1 Use `frontend-design` and Stitch `projects/16421650138318590896` as UI source of truth for tokens: navy `#1A2B3C`, emerald `#2ECC71`, Inter, 8px spacing, ambient/glass states.
+- [x] 4.2 Build dashboard shell from desktop `9804d58210334282b772e405022314dd` and mobile `cfb45554f21545dcbf8aadd6029c39db`; derive tablet from breakpoints.
+- [x] 4.3 Add dashboard metrics, zero states, period comparison, accessible validation feedback, and responsive navigation.
 
 ## Phase 5: Fixed Expenses and Savings
 
-- [ ] 5.1 Build fixed expenses using Stitch desktop `77082db94c4948738cb213802c12b918` and mobile `f2ad89c1e6d5408c92bafcf416b3676e`.
-- [ ] 5.2 Build savings/variable expense flows using desktop `288646b77b10456fb445c661c40ba295` and mobile `ca1e555250ae4608858d13ffb1e4793f`.
-- [ ] 5.3 Verify due-date validation, paid/pending/overdue, invalid goal target, and progress ownership scenarios.
+- [x] 5.1 Build fixed expenses using Stitch desktop `77082db94c4948738cb213802c12b918` and mobile `f2ad89c1e6d5408c92bafcf416b3676e`.
+- [x] 5.2 Build savings/variable expense flows using desktop `288646b77b10456fb445c661c40ba295` and mobile `ca1e555250ae4608858d13ffb1e4793f`.
+- [x] 5.3 Verify due-date validation, paid/pending/overdue, invalid goal target, and progress ownership scenarios.
 
 ## Phase 6: OCR and Reports
 
-- [ ] 6.1 Implement `/backend/ocr` extraction contract and `/frontend` upload/review flow from Stitch desktop `2a0942e8385c4b5eb4f6987b70366118` and mobile `7b254da128854100a24aa0fa6773850b`.
-- [ ] 6.2 Enforce PDF/JPG/PNG validation, draft-only extraction, category suggestions, manual correction, and confirm-to-transaction.
-- [ ] 6.3 Build `/frontend` reports for month, empty period, filters, and period comparison.
+- [x] 6.1 Implement `/backend/ocr` extraction contract and `/frontend` upload/review flow from Stitch desktop `2a0942e8385c4b5eb4f6987b70366118` and mobile `7b254da128854100a24aa0fa6773850b`.
+- [x] 6.2 Enforce PDF/JPG/PNG validation, draft-only extraction, category suggestions, manual correction, and confirm-to-transaction.
+- [x] 6.3 Build `/frontend` reports for month, empty period, filters, and period comparison.
 
 ## Phase 7: Verification / Documentation
 
-- [ ] 7.1 Add unit/integration/e2e coverage for validators, actions, RLS, OCR golden samples, and responsive desktop/tablet/mobile flows.
-- [ ] 7.2 Document Docker startup, Supabase reset/migrations, OCR limits, chain strategy, and remaining production exclusions.
+- [x] 7.1 Add unit/integration/e2e coverage for validators, actions, RLS, OCR golden samples, and responsive desktop/tablet/mobile flows.
+- [x] 7.2 Document Docker startup, Supabase reset/migrations, OCR limits, chain strategy, and remaining production exclusions.

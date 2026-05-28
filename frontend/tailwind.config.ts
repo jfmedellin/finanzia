@@ -31,6 +31,14 @@ const config: Config = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
+        navy: {
+          900: 'hsl(var(--navy-900))',
+          700: 'hsl(var(--navy-700))',
+        },
+        emerald: {
+          500: 'hsl(var(--emerald-500))',
+        },
+        slateSoft: 'hsl(var(--slate-soft))',
       },
       borderRadius: {
         lg: 'var(--radius)',
