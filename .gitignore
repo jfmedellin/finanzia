@@ -1,14 +1,24 @@
 .atl/
 
 # FinanzIA local artifacts
+# Dependencies / build caches
 node_modules/
 .next/
 out/
 dist/
 coverage/
+*.tsbuildinfo
+
+# Test artifacts
+test-results/
+playwright-report/
+.nyc_output/
+
+# Environment files
 .env
 .env.*
 !.env.example
 !.env.local.example
+
+# Logs
 *.log
-*.tsbuildinfo
