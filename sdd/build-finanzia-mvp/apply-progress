@@ -1,0 +1,55 @@
+# Apply Progress: Build FinanzIA MVP
+
+## Scope
+Phase 1 + Phase 2 cumulative state, plus Phase 2 hotfix slice after verify FAIL.
+Chain mode remains `stacked-to-main` under `ask-on-risk`.
+
+## Mode
+Standard Mode (strict TDD inactive per `openspec/config.yaml`).
+
+## Completed Tasks (Merged)
+- [x] 1.1 Scaffold `/frontend` as a minimal Next.js 14+ App Router-compatible app with Tailwind and shadcn/ui-style foundation.
+- [x] 1.2 Create `/backend/ocr` boundary, `/supabase` structure, root `docker-compose.yml`, and `.env.example` placeholders.
+- [x] 1.3 Re-detect testing capability after scaffold and keep strict TDD disabled (`strict_tdd: false`; no test command).
+- [x] 2.1 Create Supabase migration schema foundation for profiles/accounts/categories/rules/transactions/fixed expenses/savings/statements/OCR rows.
+- [x] 2.2 Add ownership RLS policies and private `statements` storage policies.
+- [x] 2.3 Add default category seed workflow and SQL policy tests for own-vs-other-user isolation.
+
+## Hotfix Updates Applied in This Slice
+1. Compatibility views `category_rules`, `statement_uploads`, `ocr_batches`, and `ocr_rows` were hardened with `WITH (security_invoker=on)` to ensure view access respects caller RLS context.
+2. `supabase/tests/001_rls_ownership_checks.sql` was rewritten as a runtime-quality SQL test artifact:
+   - self-contained auth fixture setup for two users,
+   - explicit `set local role authenticated`,
+   - assertion helpers with clear pass/fail (`[PASS]`/`[FAIL]`),
+   - ownership checks across base table + compatibility views,
+   - realistic cross-user denial check by asserting zero updated rows (instead of expecting exceptions).
+
+## Files Changed (Hotfix Slice)
+| File | Action | What Was Done |
+|------|--------|---------------|
+| `supabase/migrations/0001_phase2_security_foundation.sql` | Modified | Added `with (security_invoker=on)` to all public compatibility views that expose owner-scoped data. |
+| `supabase/tests/001_rls_ownership_checks.sql` | Modified | Replaced sanity script with executable assertion-based RLS ownership checks and deterministic fixture flow. |
+
+## Verification (Hotfix Slice)
+- Static confirmation: 4/4 compatibility views now include `security_invoker=on`.
+- Static confirmation: SQL test includes runtime assertions, authenticated role context, and cross-user zero-row update validation.
+- Runtime DB execution remains pending because Supabase CLI/psql are unavailable in current environment.
+
+## Deviations from Design
+None — implementation aligns with RLS-first design and verify remediation requirements.
+
+## Issues Found
+- Environment limitation persists: cannot execute migration/tests against live local DB from this shell (`supabase`/`psql` unavailable).
+
+## Remaining Tasks
+- Phase 3 tasks 3.1–3.3 (auth/profile and finance core).
+- Phases 4–7 untouched.
+
+## Workload / PR Boundary
+- Mode: stacked PR slice.
+- Current work unit: Phase 2 security hotfix only.
+- Boundary: does not expand into Phase 3+.
+- Review budget impact: low, SQL-only targeted patch.
+
+## Status
+6/21 tasks complete (task completion count unchanged; Phase 2 remains complete with critical security/test hotfixes applied).

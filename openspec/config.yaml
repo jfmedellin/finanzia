@@ -1,0 +1,83 @@
+schema: spec-driven
+project: FinanzIA
+root: D:\Cursos
+artifact_store:
+  mode: hybrid
+execution_mode: interactive
+review_budget_lines: 400
+chained_pr_strategy: ask-always
+delivery_strategy: ask-on-risk
+strict_tdd: false
+
+context: |
+  Product: FinanzIA, personal finance SaaS-style web app for university entrepreneurship practicum.
+  Location: D:\Cursos is a container/location folder, not a detected git repository or app root.
+  Target stack: Next.js 14+ App Router, Tailwind CSS, shadcn/ui-style components, Supabase PostgreSQL/Auth/Storage/RLS.
+  Target architecture: /frontend and /backend separation with Docker/Docker Compose.
+  OCR requirement: PDF/JPG/PNG bank statement ingestion; exact OCR engine not selected in init.
+  Current source: no FinanzIA application source code was generated during init.
+  UI rule: future UI-related SDD/design work MUST load frontend-design.
+
+testing:
+  detected: 2026-05-27
+  strict_tdd: false
+  reason: FinanzIA frontend scaffold now has package scripts, lint, and typecheck commands, but no test runner dependency or test command exists yet.
+  runner:
+    available: false
+    framework: null
+    command: null
+  layers:
+    unit:
+      available: false
+      tool: null
+    integration:
+      available: false
+      tool: null
+    e2e:
+      available: false
+      tool: null
+  coverage:
+    available: false
+    command: null
+  quality:
+    linter:
+      available: true
+      command: npm --prefix frontend run lint
+    type_checker:
+      available: true
+      command: npm --prefix frontend run typecheck
+    formatter:
+      available: false
+      command: null
+
+rules:
+  proposal:
+    - Do not generate application source code during init/proposal.
+    - Include risks for OCR, Supabase RLS/Auth, storage, Docker, and `/frontend` + `/backend` separation.
+    - Forecast downstream task size; ask on risk and ask always before chained PR strategy decisions.
+  specs:
+    - Use Given/When/Then scenarios and RFC 2119 keywords.
+    - Capture Supabase RLS/Auth/Storage and OCR requirements explicitly.
+  design:
+    - Load frontend-design for all UI-related design work.
+    - Load cognitive-doc-design for architecture or review-facing docs.
+    - Use Context7 for current Next.js, Tailwind, shadcn/ui, Supabase, Docker, and OCR library documentation.
+    - Document alternatives and tradeoffs before selecting OCR and backend boundaries.
+  tasks:
+    - Group by reviewable work units and flag any forecast over 400 changed lines.
+    - Use chained_pr_strategy: ask-always.
+  apply:
+    tdd: false
+    test_command: ""
+    notes:
+      - Do not implement application source until proposal/spec/design/tasks are approved.
+      - Phase 1 scaffold introduced lint and typecheck commands but no test runner; keep strict TDD disabled until a runner and test command are added.
+  verify:
+    test_command: ""
+    build_command: ""
+    coverage_threshold: 0
+    notes:
+      - Report unavailable tests honestly while no source/test runner exists.
+  archive:
+    - Preserve OpenSpec audit trail under openspec/changes/archive/.
+    - Warn before merging destructive deltas.
