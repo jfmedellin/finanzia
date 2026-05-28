@@ -14,5 +14,5 @@ export default async function PublicLayout({ children }: { children: ReactNode }
     redirect('/dashboard')
   }
 
-  return <main className="mx-auto min-h-screen max-w-md p-6">{children}</main>
+  return <main className="min-h-screen w-full">{children}</main>
 }

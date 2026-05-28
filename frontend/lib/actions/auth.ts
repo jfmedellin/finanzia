@@ -19,6 +19,11 @@ export async function signInAction(formData: FormData): Promise<void> {
 }
 
 export async function signUpAction(formData: FormData): Promise<void> {
+  const hasSupabaseEnv = Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL) && Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+  if (!hasSupabaseEnv) {
+    redirect('/register?error=server-unavailable')
+  }
+
   const email = String(formData.get('email') ?? '')
   const password = String(formData.get('password') ?? '')
   const supabase = await createSupabaseServerClient()
@@ -74,4 +79,26 @@ export async function upsertProfileAction(formData: FormData): Promise<void> {
 
   revalidatePath('/dashboard')
   redirect('/dashboard')
+}
+
+export async function deleteCurrentUserForE2EAction(): Promise<{ success: boolean; error?: string }> {
+  // Only allow in E2E test environments
+  if (process.env.E2E_ALLOW_USER_SELF_DELETE !== 'true') {
+    return { success: false, error: 'E2E cleanup not enabled' }
+  }
+
+  const supabase = await createSupabaseServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { success: false, error: 'Not authenticated' }
+  }
+
+  const { error } = await supabase.rpc('e2e_delete_current_user')
+
+  if (error) {
+    return { success: false, error: error.message }
+  }
+
+  return { success: true }
 }
