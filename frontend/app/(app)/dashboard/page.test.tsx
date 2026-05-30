@@ -45,15 +45,17 @@ vi.mock('@/lib/data/transactions', () => ({
 import DashboardPage from '@/app/(app)/dashboard/page'
 
 describe('DashboardPage', () => {
-  it('renders savings, comparison and category totals sections', async () => {
+  it('renders Stitch-aligned insight, metrics and analytical sections', async () => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date('2026-05-20T10:00:00.000Z'))
     const element = await DashboardPage({ searchParams: Promise.resolve({}) })
     const html = renderToStaticMarkup(element)
 
-    expect(html).toContain('Ahorro del mes')
-    expect(html).toContain('Comparativo mensual')
-    expect(html).toContain('Totales por categoria (mes actual)')
+    expect(html).toContain('Panel financiero inteligente')
+    expect(html).toContain('Ahorro mensual')
+    expect(html).toContain('Resumen de flujo de caja')
+    expect(html).toContain('Categorias de gasto')
+    expect(html).toContain('Movimientos recientes')
     expect(html).toContain('Salario')
     expect(html).toContain('Comida')
     vi.useRealTimers()

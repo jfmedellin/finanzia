@@ -2,7 +2,8 @@
 
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { requireUser } from '@/lib/auth'
+import { SAVINGS_GOAL_STATUSES } from '@/lib/constants'
 
 export async function createSavingsGoalAction(formData: FormData): Promise<void> {
   const name = String(formData.get('name') ?? '').trim()
@@ -11,16 +12,11 @@ export async function createSavingsGoalAction(formData: FormData): Promise<void>
   const targetDateRaw = String(formData.get('targetDate') ?? '').trim()
   const status = String(formData.get('status') ?? 'in_progress')
 
-  if (!name || targetAmount <= 0 || currentAmount < 0 || currentAmount > targetAmount || !['in_progress', 'completed', 'paused'].includes(status)) {
+  if (!name || targetAmount <= 0 || currentAmount < 0 || currentAmount > targetAmount || !SAVINGS_GOAL_STATUSES.includes(status as typeof SAVINGS_GOAL_STATUSES[number])) {
     redirect('/savings?error=invalid-fields')
   }
 
-  const supabase = await createSupabaseServerClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) redirect('/login')
+  const { supabase, user } = await requireUser()
 
   const { error } = await supabase.from('savings_goals').insert({
     user_id: user.id,

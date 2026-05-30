@@ -1,13 +1,10 @@
 import { getAccounts } from '@/lib/data/accounts'
 import { getTransactionsForReports } from '@/lib/data/reports'
+import { formatCurrency } from '@/lib/formatters'
 import { comparePeriods, filterTransactions, summarizeTransactions } from '@/lib/reports/metrics'
 
 type ReportsPageProps = {
   searchParams?: Promise<{ from?: string; to?: string; accountId?: string; type?: 'income' | 'expense' | 'transfer' }>
-}
-
-function formatCurrency(value: number) {
-  return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(value)
 }
 
 function isoDate(value: Date) {

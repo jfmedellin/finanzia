@@ -57,6 +57,16 @@ export async function signOutAction() {
 export async function upsertProfileAction(formData: FormData): Promise<void> {
   const fullName = String(formData.get('fullName') ?? '').trim()
   const currencyCode = String(formData.get('currencyCode') ?? 'USD').trim().toUpperCase()
+  const allowedCurrencyCodes = new Set(['USD', 'COP'])
+
+  if (!fullName) {
+    redirect('/onboarding?error=invalid-profile')
+  }
+
+  if (!allowedCurrencyCodes.has(currencyCode)) {
+    redirect('/onboarding?error=invalid-currency-code')
+  }
+
   const supabase = await createSupabaseServerClient()
 
   const {
@@ -67,17 +77,29 @@ export async function upsertProfileAction(formData: FormData): Promise<void> {
     redirect('/login')
   }
 
-  const { error } = await supabase.from('profiles').upsert({
-    id: user.id,
-    full_name: fullName,
-    currency_code: currencyCode,
-  })
+  const { error } = await supabase.from('profiles').upsert(
+    {
+      id: user.id,
+      user_id: user.id,
+      email: user.email ?? '',
+      full_name: fullName,
+      currency_code: currencyCode,
+    },
+    { onConflict: 'user_id' },
+  )
 
   if (error) {
+    console.error('Profile upsert failed', {
+      code: error.code,
+      message: error.message,
+      details: error.details,
+    })
     redirect('/onboarding?error=profile-save-failed')
   }
 
   revalidatePath('/dashboard')
+  revalidatePath('/onboarding')
+  revalidatePath('/', 'layout')
   redirect('/dashboard')
 }
 

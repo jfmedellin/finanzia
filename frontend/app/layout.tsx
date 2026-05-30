@@ -9,8 +9,15 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="es">
-      <body>{children}</body>
+    <html lang="es" suppressHydrationWarning>
+      <body>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(() => { try { const k = 'finanzia-theme'; const s = localStorage.getItem(k); const d = window.matchMedia('(prefers-color-scheme: dark)').matches; const t = (s === 'light' || s === 'dark') ? s : (d ? 'dark' : 'light'); if (t === 'dark') document.documentElement.classList.add('dark'); else document.documentElement.classList.remove('dark'); } catch (_) {} })();`,
+          }}
+        />
+        {children}
+      </body>
     </html>
   )
 }

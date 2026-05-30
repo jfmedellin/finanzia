@@ -15,13 +15,58 @@
   --muted-foreground: 215 16% 47%;
   --border: 212 31% 88%;
   --input: 212 31% 88%;
-  --ring: 145 63% 49%;
-  --radius: 0.75rem;
+  --ring: 210 87% 8%;
+  --radius: 1rem;
 
+  --navy-950: 210 87% 8%;
   --navy-900: 210 39% 17%;
   --navy-700: 210 35% 30%;
+  --navy-50: 210 38% 96%;
+  --emerald-50: 145 63% 95%;
   --emerald-500: 145 63% 49%;
+  --emerald-600: 145 63% 40%;
+  --emerald-700: 145 63% 29%;
+  --emerald-800: 145 64% 22%;
+  --coral-50: 4 78% 96%;
+  --coral-500: 4 70% 64%;
+  --coral-700: 4 66% 38%;
   --slate-soft: 210 24% 94%;
+
+  --bg-glow-emerald: rgba(46, 204, 113, 0.10);
+  --bg-glow-navy: rgba(4, 22, 39, 0.10);
+}
+
+.dark {
+  --background: 150 5% 7%;
+  --foreground: 30 4% 89%;
+  --card: 150 3% 12%;
+  --card-foreground: 30 4% 89%;
+  --primary: 167 17% 58%;
+  --primary-foreground: 164 43% 15%;
+  --accent: 165 16% 58%;
+  --accent-foreground: 165 43% 15%;
+  --muted: 120 4% 16%;
+  --muted-foreground: 154 6% 77%;
+  --border: 163 5% 27%;
+  --input: 150 3% 12%;
+  --ring: 165 16% 58%;
+
+  --navy-950: 30 4% 89%;
+  --navy-900: 30 4% 89%;
+  --navy-700: 154 6% 77%;
+  --navy-50: 120 4% 16%;
+  --emerald-50: 120 4% 16%;
+  --emerald-500: 163 28% 74%;
+  --emerald-600: 167 17% 58%;
+  --emerald-700: 214 24% 30%;
+  --emerald-800: 214 35% 16%;
+  --coral-50: 233 100% 94%;
+  --coral-500: 236 100% 80%;
+  --coral-700: 237 91% 70%;
+  --slate-soft: 220 30% 22%;
+
+  --bg-glow-emerald: rgba(132, 165, 157, 0.12);
+  --bg-glow-navy: rgba(58, 74, 95, 0.18);
 }
 
 * {
@@ -30,15 +75,78 @@
 
 body {
   background:
-    radial-gradient(circle at 0% -10%, rgba(46, 204, 113, 0.08), transparent 35%),
-    radial-gradient(circle at 100% -10%, rgba(26, 43, 60, 0.08), transparent 35%),
+    radial-gradient(circle at 0% -10%, var(--bg-glow-emerald), transparent 34%),
+    radial-gradient(circle at 100% -12%, var(--bg-glow-navy), transparent 38%),
     hsl(var(--background));
   color: hsl(var(--foreground));
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
-.glass-surface {
-  background: linear-gradient(120deg, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.72));
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+@layer components {
+  .glass-surface {
+    background: linear-gradient(120deg, rgba(255, 255, 255, 0.90), rgba(255, 255, 255, 0.74));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .dark .glass-surface {
+    background: linear-gradient(120deg, rgba(30, 32, 31, 0.92), rgba(30, 32, 31, 0.76));
+  }
+
+  .finance-card {
+    @apply rounded-card border border-border/80 bg-card p-6 shadow-card;
+  }
+
+  .finance-card-interactive {
+    @apply transition duration-200 ease-out hover:-translate-y-0.5 hover:shadow-cardHover;
+  }
+
+  .ai-insight-card {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid transparent;
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.76)) padding-box,
+      linear-gradient(135deg, rgba(26, 43, 60, 0.70), rgba(46, 204, 113, 0.72)) border-box;
+    box-shadow: 0 18px 46px rgba(26, 43, 60, 0.10);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .dark .ai-insight-card {
+    background:
+      linear-gradient(135deg, rgba(30, 32, 31, 0.94), rgba(26, 28, 27, 0.82)) padding-box,
+      linear-gradient(135deg, rgba(183, 200, 225, 0.28), rgba(132, 165, 157, 0.34)) border-box;
+    box-shadow: 0 18px 46px rgba(0, 0, 0, 0.36);
+  }
+
+  .finance-field {
+    @apply w-full rounded-lg border border-input bg-card px-3 py-2.5 text-foreground shadow-sm outline-none transition focus:border-ring focus:ring-2 focus:ring-ring/20;
+  }
+}
+
+@layer utilities {
+  .dark .bg-white {
+    background-color: hsl(var(--card));
+  }
+
+  .dark .bg-white\/60 {
+    background-color: hsl(var(--card) / 0.60);
+  }
+
+  .dark .bg-white\/70 {
+    background-color: hsl(var(--card) / 0.70);
+  }
+
+  .dark .bg-white\/80 {
+    background-color: hsl(var(--card) / 0.80);
+  }
+
+  .dark .border-white\/80 {
+    border-color: hsl(var(--border) / 0.80);
+  }
+
+  .finance-number {
+    font-variant-numeric: tabular-nums;
+  }
 }

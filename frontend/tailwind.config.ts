@@ -32,18 +32,41 @@ const config: Config = {
           foreground: 'hsl(var(--card-foreground))',
         },
         navy: {
+          950: 'hsl(var(--navy-950))',
           900: 'hsl(var(--navy-900))',
           700: 'hsl(var(--navy-700))',
+          50: 'hsl(var(--navy-50))',
         },
         emerald: {
           500: 'hsl(var(--emerald-500))',
+          600: 'hsl(var(--emerald-600))',
+          700: 'hsl(var(--emerald-700))',
+          800: 'hsl(var(--emerald-800))',
+          50: 'hsl(var(--emerald-50))',
+        },
+        coral: {
+          500: 'hsl(var(--coral-500))',
+          700: 'hsl(var(--coral-700))',
+          50: 'hsl(var(--coral-50))',
         },
         slateSoft: 'hsl(var(--slate-soft))',
       },
       borderRadius: {
+        card: '1rem',
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
+      },
+      boxShadow: {
+        card: '0 4px 20px rgba(26, 43, 60, 0.05)',
+        cardHover: '0 12px 32px rgba(26, 43, 60, 0.12)',
+        ai: '0 18px 46px rgba(26, 43, 60, 0.16)',
+      },
+      fontFamily: {
+        sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+      },
+      maxWidth: {
+        shell: '80rem',
       },
     },
   },

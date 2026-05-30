@@ -1,17 +1,9 @@
 import { createSavingsGoalAction } from '@/lib/actions/savings'
 import { getSavingsGoals } from '@/lib/data/savings'
+import { formatCurrency, progressPercent } from '@/lib/formatters'
 
 type SavingsPageProps = {
   searchParams?: Promise<{ error?: string; saved?: string }>
-}
-
-function formatCurrency(value: number) {
-  return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(value)
-}
-
-function progress(currentAmount: number, targetAmount: number) {
-  if (targetAmount <= 0) return 0
-  return Math.min(100, Math.round((currentAmount / targetAmount) * 100))
 }
 
 export default async function SavingsPage({ searchParams }: SavingsPageProps) {
@@ -78,7 +70,7 @@ export default async function SavingsPage({ searchParams }: SavingsPageProps) {
           ) : (
             <ul className="mt-3 space-y-3 text-sm">
               {goals.map((goal) => {
-                const pct = progress(Number(goal.current_amount), Number(goal.target_amount))
+                const pct = progressPercent(Number(goal.current_amount), Number(goal.target_amount))
                 return (
                   <li key={goal.id} className="rounded-md border px-3 py-3">
                     <div className="flex items-center justify-between gap-3">

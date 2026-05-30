@@ -2,10 +2,16 @@
 
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { requireUser } from '@/lib/auth'
+import { ALLOWED_OCR_MIME_TYPES, TRANSACTION_TYPES } from '@/lib/constants'
 import { parseStatementWithMockOcr } from '@/lib/ocr/mock-parser'
 
-const ALLOWED_MIME = new Set(['application/pdf', 'image/png', 'image/jpeg'])
+function sanitizeFilename(filename: string): string {
+  return filename
+    .replace(/[^a-zA-Z0-9._-]/g, '_')
+    .replace(/_{2,}/g, '_')
+    .slice(0, 200)
+}
 
 function suggestCategoryId(description: string, categories: Array<{ id: string; name: string; category_type: string }>, direction: 'income' | 'expense' | 'transfer') {
   if (direction === 'transfer') return null
@@ -23,16 +29,14 @@ export async function uploadStatementAction(formData: FormData): Promise<void> {
     redirect('/statements?error=file-required')
   }
 
-  if (!ALLOWED_MIME.has(file.type)) {
+  if (!ALLOWED_OCR_MIME_TYPES.has(file.type)) {
     redirect('/statements?error=invalid-file-type')
   }
 
-  const supabase = await createSupabaseServerClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const { supabase, user } = await requireUser()
 
-  if (!user) redirect('/login')
+  const sanitizedFilename = sanitizeFilename(file.name)
+  const pendingPath = `${user.id}/pending-${Date.now()}-${sanitizedFilename}`
 
   const statementInsert = await supabase
     .from('bank_statements')
@@ -42,7 +46,7 @@ export async function uploadStatementAction(formData: FormData): Promise<void> {
       original_filename: file.name,
       mime_type: file.type,
       storage_bucket: 'statements',
-      storage_path: `${user.id}/pending-${Date.now()}-${file.name}`,
+      storage_path: pendingPath,
       status: 'uploaded',
     })
     .select('id')
@@ -53,7 +57,7 @@ export async function uploadStatementAction(formData: FormData): Promise<void> {
   }
 
   const statementId = statementInsert.data.id
-  const storagePath = `${user.id}/${statementId}/${file.name}`
+  const storagePath = `${user.id}/${statementId}/${sanitizedFilename}`
 
   const uploadResult = await supabase.storage.from('statements').upload(storagePath, file, {
     upsert: false,
@@ -65,7 +69,7 @@ export async function uploadStatementAction(formData: FormData): Promise<void> {
     redirect('/statements?error=storage-failed')
   }
 
-  await supabase
+  const updateResult = await supabase
     .from('bank_statements')
     .update({
       storage_path: storagePath,
@@ -73,9 +77,21 @@ export async function uploadStatementAction(formData: FormData): Promise<void> {
     })
     .eq('id', statementId)
 
+  if (updateResult.error) {
+    redirect('/statements?error=operation-failed')
+  }
+
   const draftRows = parseStatementWithMockOcr(file.name)
   if (draftRows.length > 0) {
-    const { data: categories } = await supabase.from('categories').select('id,name,category_type,is_active').eq('is_active', true)
+    const { data: categories, error: categoriesError } = await supabase
+      .from('categories')
+      .select('id,name,category_type,is_active')
+      .eq('is_active', true)
+
+    if (categoriesError) {
+      redirect('/statements?error=operation-failed')
+    }
+
     const activeCategories = categories ?? []
 
     const payload = draftRows.map((row, idx) => ({
@@ -92,7 +108,11 @@ export async function uploadStatementAction(formData: FormData): Promise<void> {
       status: 'draft',
     }))
 
-    await supabase.from('ocr_extracted_transactions').insert(payload)
+    const insertResult = await supabase.from('ocr_extracted_transactions').insert(payload)
+
+    if (insertResult.error) {
+      redirect('/statements?error=operation-failed')
+    }
   }
 
   revalidatePath('/statements')
@@ -108,16 +128,11 @@ export async function confirmOcrDraftAction(formData: FormData): Promise<void> {
   const happenedAt = String(formData.get('extractedDate') ?? '').trim()
   const description = String(formData.get('description') ?? '').trim()
 
-  if (!rowId || !description || !happenedAt || amount <= 0 || !['income', 'expense', 'transfer'].includes(direction)) {
+  if (!rowId || !description || !happenedAt || amount <= 0 || !TRANSACTION_TYPES.includes(direction as typeof TRANSACTION_TYPES[number])) {
     redirect('/statements?error=confirm-invalid-fields')
   }
 
-  const supabase = await createSupabaseServerClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) redirect('/login')
+  const { supabase, user } = await requireUser()
 
   const { data: row, error: rowError } = await supabase
     .from('ocr_extracted_transactions')
@@ -154,7 +169,7 @@ export async function confirmOcrDraftAction(formData: FormData): Promise<void> {
     redirect('/statements?error=confirm-operation-failed')
   }
 
-  await supabase
+  const updateResult = await supabase
     .from('ocr_extracted_transactions')
     .update({
       description,
@@ -165,6 +180,10 @@ export async function confirmOcrDraftAction(formData: FormData): Promise<void> {
       status: 'confirmed',
     })
     .eq('id', rowId)
+
+  if (updateResult.error) {
+    redirect('/statements?error=confirm-operation-failed')
+  }
 
   revalidatePath('/dashboard')
   revalidatePath('/statements')

@@ -1,9 +1,20 @@
-import { expect, test } from '@playwright/test'
+import { expect, test, type Page } from '@playwright/test'
 
 const E2E_AUTH_EMAIL = process.env.E2E_AUTH_EMAIL ?? 'e2e-auth-user@finanzia.dev'
 const E2E_AUTH_PASSWORD = process.env.E2E_AUTH_PASSWORD ?? 'FinanzIA123!'
 
-test('register and login flow works', async ({ page }) => {
+async function ensureDashboardReady(page: Page) {
+  if (!/\/onboarding/.test(page.url())) {
+    return
+  }
+
+  await page.locator('input[name="fullName"]').fill('E2E FinanzIA User')
+  await page.locator('select[name="currencyCode"]').selectOption('COP')
+  await page.getByRole('button', { name: /guardar perfil/i }).click()
+  await expect(page).toHaveURL(/\/dashboard/)
+}
+
+test('register and login flow works', async ({ page }, testInfo) => {
   await page.goto('/register')
 
   await page.locator('input[name="email"]').fill(E2E_AUTH_EMAIL)
@@ -20,6 +31,13 @@ test('register and login flow works', async ({ page }) => {
   await page.getByRole('button', { name: /iniciar sesión|entrar/i }).click()
 
   await expect(page).toHaveURL(/\/(dashboard|onboarding)/)
+  await ensureDashboardReady(page)
+
+  await page.goto('/dashboard')
+  await ensureDashboardReady(page)
+  await expect(page).toHaveURL(/\/dashboard/)
+  await expect(page.getByRole('heading', { name: /panel financiero inteligente/i })).toBeVisible()
+  await page.screenshot({ path: testInfo.outputPath(`dashboard-${testInfo.project.name}.png`), fullPage: true })
 
   // Cleanup: delete the test user via API
   const cleanupResponse = await page.request.post('/api/e2e/cleanup')

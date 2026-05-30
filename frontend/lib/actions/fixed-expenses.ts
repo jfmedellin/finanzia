@@ -2,10 +2,8 @@
 
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-import { createSupabaseServerClient } from '@/lib/supabase/server'
-
-const VALID_RECURRENCES = new Set(['weekly', 'biweekly', 'monthly', 'quarterly', 'yearly'])
-const VALID_STATUSES = new Set(['paid', 'pending', 'overdue'])
+import { requireUser } from '@/lib/auth'
+import { FIXED_EXPENSE_RECURRENCES, FIXED_EXPENSE_STATUSES } from '@/lib/constants'
 
 export async function createFixedExpenseAction(formData: FormData): Promise<void> {
   const name = String(formData.get('name') ?? '').trim()
@@ -18,16 +16,11 @@ export async function createFixedExpenseAction(formData: FormData): Promise<void
   const accountIdRaw = String(formData.get('accountId') ?? '').trim()
   const categoryId = String(formData.get('categoryId') ?? '').trim()
 
-  if (!name || !categoryId || !startsOn || amount <= 0 || dueDay < 1 || dueDay > 31 || !VALID_RECURRENCES.has(recurrence) || !VALID_STATUSES.has(status)) {
+  if (!name || !categoryId || !startsOn || amount <= 0 || dueDay < 1 || dueDay > 31 || !FIXED_EXPENSE_RECURRENCES.includes(recurrence as typeof FIXED_EXPENSE_RECURRENCES[number]) || !FIXED_EXPENSE_STATUSES.includes(status as typeof FIXED_EXPENSE_STATUSES[number])) {
     redirect('/fixed-expenses?error=invalid-fields')
   }
 
-  const supabase = await createSupabaseServerClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) redirect('/login')
+  const { supabase, user } = await requireUser()
 
   const { error } = await supabase.from('fixed_expenses').insert({
     user_id: user.id,

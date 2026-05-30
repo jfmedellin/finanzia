@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { requireUser } from '@/lib/auth'
 import { validateTransactionInput, type TransactionInput } from '@/lib/actions/validation'
 
 type ActionResult = { ok: boolean; error: string }
@@ -37,12 +37,7 @@ export async function createTransactionAction(formData: FormData): Promise<void>
     redirect('/dashboard?error=invalid-amount-or-fields')
   }
 
-  const supabase = await createSupabaseServerClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) redirect('/login')
+  const { supabase } = await requireUser()
 
   const { error } = await supabase.rpc('create_finance_transaction', {
     p_account_id: input.accountId,

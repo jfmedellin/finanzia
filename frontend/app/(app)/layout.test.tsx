@@ -8,7 +8,7 @@ const { redirectMock, createSupabaseServerClientMock } = vi.hoisted(() => ({
   createSupabaseServerClientMock: vi.fn(),
 }))
 
-vi.mock('next/navigation', () => ({ redirect: redirectMock }))
+vi.mock('next/navigation', () => ({ redirect: redirectMock, usePathname: () => '/fixed-expenses' }))
 vi.mock('@/lib/actions/auth', () => ({ signOutAction: vi.fn() }))
 vi.mock('@/lib/supabase/server', () => ({ createSupabaseServerClient: createSupabaseServerClientMock }))
 
@@ -36,6 +36,7 @@ describe('PrivateLayout', () => {
 
     expect(html).toContain('aria-label="Navegacion principal"')
     expect(html).toContain('aria-label="Navegacion movil"')
-    expect(html).toContain('md:hidden')
+    expect(html).toContain('grid-cols-4')
+    expect(html).toContain('Presupuesto')
   })
 })

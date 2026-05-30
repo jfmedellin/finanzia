@@ -1,6 +1,9 @@
 import type { ReactNode } from 'react'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
+import { AppBreadcrumb, DesktopNavigation, MobileNavigation } from '@/components/app-navigation'
+import { ThemeToggle } from '@/components/theme-toggle'
+import { Button } from '@/components/ui/button'
 import { signOutAction } from '@/lib/actions/auth'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 
@@ -16,80 +19,65 @@ export default async function PrivateLayout({ children }: { children: ReactNode 
     redirect('/login')
   }
 
-  return (
-    <div className="min-h-screen pb-20 md:pb-0">
-      <header className="sticky top-0 z-20 border-b border-border/70 glass-surface">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-          <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Smart Finance</p>
-            <Link href="/dashboard" className="text-lg font-semibold text-navy-900">
-              FinanzIA
-            </Link>
-          </div>
-          <nav className="hidden items-center gap-2 md:flex" aria-label="Navegacion principal">
-            <Link href="/dashboard#resumen" className="rounded-full px-3 py-1.5 text-sm text-navy-700 hover:bg-muted">
-              Resumen
-            </Link>
-            <Link href="/dashboard#movimientos" className="rounded-full px-3 py-1.5 text-sm text-navy-700 hover:bg-muted">
-              Movimientos
-            </Link>
-            <Link href="/fixed-expenses" className="rounded-full px-3 py-1.5 text-sm text-navy-700 hover:bg-muted">
-              Fijos
-            </Link>
-            <Link href="/savings" className="rounded-full px-3 py-1.5 text-sm text-navy-700 hover:bg-muted">
-              Ahorros
-            </Link>
-            <Link href="/statements" className="rounded-full px-3 py-1.5 text-sm text-navy-700 hover:bg-muted">
-              OCR
-            </Link>
-            <Link href="/reports" className="rounded-full px-3 py-1.5 text-sm text-navy-700 hover:bg-muted">
-              Reportes
-            </Link>
-          </nav>
-          <form action={signOutAction}>
-            <button className="rounded-full border border-border bg-card px-3 py-1.5 text-sm font-medium hover:bg-muted">Salir</button>
-          </form>
-        </div>
-      </header>
-      <main className="mx-auto max-w-6xl px-4 py-6 md:py-8">{children}</main>
+  const profileLabel = user.user_metadata?.full_name || user.email || 'Usuario FinanzIA'
 
-      <nav
-        className="fixed inset-x-0 bottom-0 z-20 border-t border-border/80 bg-card/95 p-3 backdrop-blur md:hidden"
-        aria-label="Navegacion movil"
-      >
-        <ul className="grid grid-cols-6 gap-2">
-          <li>
-            <Link href="/dashboard#resumen" className="block rounded-lg bg-muted px-3 py-2 text-center text-sm font-medium text-navy-900">
-              Resumen
-            </Link>
-          </li>
-          <li>
-            <Link href="/dashboard#movimientos" className="block rounded-lg px-3 py-2 text-center text-sm font-medium text-navy-700">
-              Movimientos
-            </Link>
-          </li>
-          <li>
-            <Link href="/fixed-expenses" className="block rounded-lg px-3 py-2 text-center text-sm font-medium text-navy-700">
-              Fijos
-            </Link>
-          </li>
-          <li>
-            <Link href="/savings" className="block rounded-lg px-3 py-2 text-center text-sm font-medium text-navy-700">
-              Ahorros
-            </Link>
-          </li>
-          <li>
-            <Link href="/statements" className="block rounded-lg px-3 py-2 text-center text-sm font-medium text-navy-700">
-              OCR
-            </Link>
-          </li>
-          <li>
-            <Link href="/reports" className="block rounded-lg px-3 py-2 text-center text-sm font-medium text-navy-700">
-              Reportes
-            </Link>
-          </li>
-        </ul>
-      </nav>
+  return (
+    <div className="min-h-screen bg-background pb-24 text-foreground md:flex md:pb-0">
+      <aside className="fixed left-0 top-0 z-30 hidden h-screen w-64 flex-col border-r border-border/80 bg-card/95 px-5 py-6 shadow-card backdrop-blur md:flex">
+        <div>
+          <Link href="/dashboard" className="block text-2xl font-semibold tracking-tight text-navy-950">
+            FinanzaIA
+          </Link>
+          <p className="mt-1 text-sm font-medium text-muted-foreground">AI Financial Assistant</p>
+        </div>
+
+        <DesktopNavigation />
+
+          <div className="mt-auto space-y-4">
+          <Link
+            href="/fixed-expenses#new-fixed-expense"
+            className="block rounded-xl bg-emerald-700 px-4 py-3 text-center text-sm font-semibold text-white shadow-card transition hover:-translate-y-0.5 hover:bg-emerald-800 hover:shadow-cardHover"
+          >
+            Add Expense
+          </Link>
+          <div className="rounded-2xl border border-border/80 bg-navy-50 p-4">
+            <p className="truncate text-sm font-semibold text-navy-950">{profileLabel}</p>
+            <p className="mt-1 text-xs font-medium text-muted-foreground">Cuenta activa</p>
+            <form action={signOutAction} className="mt-3">
+              <Button type="submit" variant="outline" className="w-full border-border bg-card text-foreground hover:bg-muted">Salir</Button>
+            </form>
+          </div>
+        </div>
+      </aside>
+
+      <div className="flex min-h-screen flex-1 flex-col md:ml-64">
+        <header className="sticky top-0 z-20 h-16 border-b border-border/70 glass-surface">
+          <div className="flex h-full items-center justify-between px-4 md:px-10">
+            <div>
+              <AppBreadcrumb />
+              <Link href="/dashboard" className="text-lg font-semibold tracking-tight text-navy-950 md:hidden">
+                FinanzaIA
+              </Link>
+            </div>
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <span className="hidden rounded-xl border border-border bg-card/80 px-3 py-2 text-sm font-semibold text-foreground shadow-card sm:block">
+                Search
+              </span>
+              <span className="rounded-xl border border-border bg-card/80 px-3 py-2 text-sm font-semibold text-foreground shadow-card">
+                Alerts
+              </span>
+              <form action={signOutAction} className="md:hidden">
+                <Button type="submit" variant="outline" className="h-10 border-border bg-card/80 px-3 text-foreground shadow-card hover:bg-muted">Salir</Button>
+              </form>
+            </div>
+          </div>
+        </header>
+
+        <main className="mx-auto w-full max-w-shell px-4 py-6 md:px-10 md:py-10">{children}</main>
+      </div>
+
+      <MobileNavigation />
     </div>
   )
 }
